@@ -43,13 +43,13 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   users[userID] = { id: userID, email: email, password: password };
   res.cookie("user_id", userID);
-  console.log("Success users", users[userID]);
+  console.log("Success users", users[userID]); // console log user info when success
   res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
   const id = req.cookies["user_id"];
-  console.log("user from users", users[id]);
+  console.log("user from users", users[id]); // show what is the user info by using cookie id
   const templateVars = { urls: urlDatabase, user: users[id] };
   res.render("urls_index", templateVars);
 });
