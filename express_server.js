@@ -29,6 +29,22 @@ const generateRandomString = function () {
   return result;
 };
 
+const emptyCheck = function (item) {
+  if (item.length < 1) {
+    return true;
+  }
+  return false;
+};
+
+const regCheck = function (users, email) {
+  for (let user in users) {
+    if (users[user]["email"] === email) {
+      return true;
+    }
+  }
+  return false;
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -41,10 +57,16 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-  users[userID] = { id: userID, email: email, password: password };
-  res.cookie("user_id", userID);
-  console.log("Success users", users[userID]); // console log user info when success
-  res.redirect("/urls");
+  if (emptyCheck(password) || emptyCheck(email)) {
+    res.status(400).send("Email/Password is empty");
+  } else if (regCheck(users, email)) {
+    res.status(400).send("Email already been used");
+  } else {
+    users[userID] = { id: userID, email: email, password: password };
+    res.cookie("user_id", userID);
+    console.log("Success users", users[userID]); // console log user info when success
+    res.redirect("/urls");
+  }
 });
 
 app.get("/urls", (req, res) => {
