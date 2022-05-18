@@ -19,7 +19,7 @@
       </div>
     </div>
     <% if (typeof user !== "undefined") { %>
-    <p>Logged In As: <%= user.email %></p>
+    <p>Logged In As: <%= user.email %> !</p>
     <form class="form-inline float-right" action="/logout" method="POST">
       <button
         type="submit"
@@ -29,12 +29,16 @@
       </button>
     </form>
     <% } else { %>
-    <form class="form-inline float-right" action="/login" method="POST">
-      <input type="text" name="username" placeholder="Name" />
-      <button type="submit" class="btn btn-primary-outline border border-dark">
+    <a href="/register"
+      ><button class="btn btn-btn-primary-outline border border-dark">
+        Register
+      </button></a
+    >
+    <a href="/login"
+      ><button class="btn btn-btn-primary-outline border border-dark">
         Login
-      </button>
-    </form>
+      </button></a
+    >
     <% } %>
   </nav>
 </header>

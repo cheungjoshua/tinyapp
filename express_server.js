@@ -36,10 +36,13 @@ const emptyCheck = function (item) {
   return false;
 };
 
-const regCheck = function (users, email) {
+const matchCheck = function (users, obj) {
   for (let user in users) {
-    if (users[user]["email"] === email) {
-      return true;
+    console.log(users[user]);
+    for (let item in users[user]) {
+      if (users[user][item] === obj) {
+        return users[user]["id"];
+      }
     }
   }
   return false;
@@ -49,18 +52,51 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+// For Login - Get
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+// For Login - Post
+app.post("/login", (req, res) => {
+  let userID = "";
+  const email = req.body.email;
+  const password = req.body.password;
+  if (matchCheck(users, email) === false) {
+    res.status(403).send("Error 403 Email cannot be found");
+  } else if (matchCheck(users, email) !== false) {
+    userID = matchCheck(users, email);
+    if (users[userID]["password"] !== password) {
+      res.status(403).send("Error 403 Password not match");
+    } else {
+      res.cookie("user_id", userID);
+      res.redirect("/urls");
+    }
+  }
+  // will update using email to login in next exercise
+  res.redirect("/urls");
+});
+
+// For Logout - Post
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect("/urls");
+});
+
+// For Register - Get
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
+// For Register - Post
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
   if (emptyCheck(password) || emptyCheck(email)) {
-    res.status(400).send("Email/Password is empty");
-  } else if (regCheck(users, email)) {
-    res.status(400).send("Email already been used");
+    res.status(400).send("Error 400 Email/Password is empty");
+  } else if (matchCheck(users, email) !== false) {
+    res.status(400).send("Error 400 Email already been used");
   } else {
     users[userID] = { id: userID, email: email, password: password };
     res.cookie("user_id", userID);
@@ -69,6 +105,7 @@ app.post("/register", (req, res) => {
   }
 });
 
+// For Main URLS - Get
 app.get("/urls", (req, res) => {
   const id = req.cookies["user_id"];
   console.log("user from users", users[id]); // show what is the user info by using cookie id
@@ -76,21 +113,12 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// For Main URLS - Post
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
-});
-
-app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username); // will update using email to login in next exercise
-  res.redirect("/urls");
-});
-
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
