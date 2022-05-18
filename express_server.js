@@ -1,10 +1,14 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const { redirect } = require("express/lib/response");
+
 const app = express();
 const PORT = 8080;
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 let urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
@@ -28,13 +32,23 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(req.body);
   res.redirect(`/urls/${shortURL}`);
+});
+
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username", req.body.username);
+  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
