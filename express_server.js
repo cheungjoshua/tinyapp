@@ -15,15 +15,17 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
-const generateRandomString = function (body) {
+let users = {};
+
+const generateRandomString = function () {
   let result = "";
-  let longURL = body.longURL;
+  // let longURL = body.longURL;
   const letter =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++) {
     result += letter.charAt(Math.floor(Math.random() * letter.length));
   }
-  urlDatabase[result] = longURL;
+  // urlDatabase[result] = longURL;
   return result;
 };
 
@@ -31,23 +33,41 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.post("/register", (req, res) => {
+  const userID = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  users[userID] = { id: userID, email: email, password: password };
+  res.cookie("user_id", userID);
+  console.log("Success users", users[userID]);
+  res.redirect("/urls");
+});
+
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const id = req.cookies["user_id"];
+  console.log("user from users", users[id]);
+  const templateVars = { urls: urlDatabase, user: users[id] };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString(req.body);
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("username", req.body.username); // will update using email to login in next exercise
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username", req.body.username);
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
