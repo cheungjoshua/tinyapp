@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const { redirect } = require("express/lib/response");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 const PORT = 8080;
@@ -87,7 +87,7 @@ app.post("/login", (req, res) => {
     res.status(403).send("Error 403 Email cannot be found");
   } else if (matchCheck(users, email) !== false) {
     userID = matchCheck(users, email);
-    if (users[userID]["password"] !== password) {
+    if (!bcrypt.compareSync(password, users[userID]["password"])) {
       res.status(403).send("Error 403 Password not match");
     } else {
       res.cookie("user_id", userID);
@@ -113,12 +113,13 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   if (emptyCheck(password) || emptyCheck(email)) {
     res.status(400).send("Error 400 Email/Password is empty");
   } else if (matchCheck(users, email) !== false) {
     res.status(400).send("Error 400 Email already been used");
   } else {
-    users[userID] = { id: userID, email: email, password: password };
+    users[userID] = { id: userID, email: email, password: hashedPassword };
     res.cookie("user_id", userID);
     console.log("Success users", users[userID]); // console log user info when success
     res.redirect("/urls");
