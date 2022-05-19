@@ -25,13 +25,11 @@ let users = {};
 
 const generateRandomString = function () {
   let result = "";
-  // let longURL = body.longURL;
   const letter =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++) {
     result += letter.charAt(Math.floor(Math.random() * letter.length));
   }
-  // urlDatabase[result] = longURL;
   return result;
 };
 
@@ -52,6 +50,17 @@ const matchCheck = function (users, obj) {
     }
   }
   return false;
+};
+
+const urlsForUser = function (list, id) {
+  let matchURLS = {};
+  for (let link in list) {
+    console.log(list[link]);
+    if (list[link]["userID"] === id) {
+      matchURLS[link] = list[link]["longURL"];
+    }
+  }
+  return matchURLS;
 };
 
 app.get("/", (req, res) => {
@@ -85,7 +94,6 @@ app.post("/login", (req, res) => {
       res.redirect("/urls");
     }
   }
-  // will update using email to login in next exercise
   res.redirect("/urls");
 });
 
@@ -120,8 +128,9 @@ app.post("/register", (req, res) => {
 // For Main URLS - Get
 app.get("/urls", (req, res) => {
   const id = req.cookies["user_id"];
-  console.log("user from users", users[id]); // show what is the user info by using cookie id
-  const templateVars = { urls: urlDatabase, user: users[id] };
+  console.log("user from users", users[id]);
+  const urls = urlsForUser(urlDatabase, id);
+  const templateVars = { urls: urls, user: users[id] };
   res.render("urls_index", templateVars);
 });
 
@@ -133,8 +142,14 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// For shortURL redirect link
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]["longURL"];
+  const shortURL = req.params.shortURL;
+  // const id = req.cookies["user_id"];
+  if (typeof shortURL === "undefined") {
+    res.send("Error");
+  }
   res.redirect(longURL);
 });
 
@@ -149,23 +164,39 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  const id = req.cookies["user_id"];
   const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
+  if (urlDatabase[shortURL]["userID"] === id) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+  } else {
+    res.status(400).send("Error: ShortURL not allow to delete");
+  }
 });
 
 app.post("/urls/:shortURL/update", (req, res) => {
+  const id = req.cookies["user_id"];
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect("/urls");
+  if (urlDatabase[shortURL]["userID"] === id) {
+    urlDatabase[shortURL] = req.body.longURL;
+    res.redirect("/urls");
+  } else {
+    res.status(400).send("Error: ShortURL not allow to edit");
+  }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
-  };
-  res.render("urls_show", templateVars);
+  const id = req.cookies["user_id"];
+  const shortURL = req.params.shortURL;
+  if (urlDatabase[shortURL]["userID"] === id) {
+    const templateVars = {
+      shortURL: shortURL,
+      longURL: urlDatabase[shortURL]["longURL"],
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(400).send("Error: ShortURL not allow to edit");
+  }
 });
 
 app.listen(PORT, () => {
