@@ -22,12 +22,17 @@ let urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
     userID: "aJ48lW",
+    created: 1653023722164,
+    clicked: 0,
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
     userID: "TsHBL4",
+    created: 1653023722164,
+    clicked: 0,
   },
 };
+
 // For testing  - Users database
 let users = {
   TsHBL4: {
@@ -157,7 +162,12 @@ app.post("/urls", (req, res) => {
   const created = new Date().getTime();
 
   //create short URL object and add to DB
-  urlDatabase[shortURL] = { longURL: longURL, userID: id, created: created };
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: id,
+    created: created,
+    clicked: 0,
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -168,6 +178,9 @@ app.get("/u/:shortURL", (req, res) => {
   if (typeof shortURL === "undefined") {
     res.send("Error");
   }
+  // if it is valid url, viewed of the shortURL add 1
+  urlDatabase[shortURL]["clicked"] += 1;
+  console.log("urls count check", urlDatabase[shortURL]);
   res.redirect(longURL);
 });
 
