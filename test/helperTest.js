@@ -1,6 +1,10 @@
 const { assert } = require("chai");
 
+<<<<<<< HEAD
 const { matchCheck, urlsForUser } = require("../helper.js");
+=======
+const { matchCheck } = require("../helper.js");
+>>>>>>> 4b42a56dc058fb42a69088f116c1090ea917913e
 
 const testUsers = {
   userRandomID: {
@@ -15,6 +19,7 @@ const testUsers = {
   },
 };
 
+<<<<<<< HEAD
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -26,6 +31,8 @@ const urlDatabase = {
   },
 };
 
+=======
+>>>>>>> 4b42a56dc058fb42a69088f116c1090ea917913e
 describe("matchCheck", function () {
   it("should return a user with valid email", function () {
     const user = matchCheck(testUsers, "user@example.com");
@@ -34,6 +41,7 @@ describe("matchCheck", function () {
     assert.equal(user, expectedUserID);
   });
 });
+<<<<<<< HEAD
 
 describe("urlsForUser", function () {
   it("should return url belong to user", function () {
@@ -43,3 +51,5 @@ describe("urlsForUser", function () {
     assert.deepEqual(user, expectedUserID);
   });
 });
+=======
+>>>>>>> 4b42a56dc058fb42a69088f116c1090ea917913e
