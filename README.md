@@ -7,6 +7,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["Index page"](https://github.com/cheungjoshua/tinyapp/blob/main/docs/Screen%20Shot%202022-05-19%20at%2021.01.00.png?raw=true)
 !["Create ShortURL"](https://github.com/cheungjoshua/tinyapp/blob/main/docs/Screen%20Shot%202022-05-19%20at%2021.00.22.png?raw=true)
 !["Edit ShortURL"](https://github.com/cheungjoshua/tinyapp/blob/main/docs/Screen%20Shot%202022-05-19%20at%2021.01.42.png?raw=true)
+!["Register page"](https://github.com/cheungjoshua/tinyapp/blob/main/docs/Screen%20Shot%202022-05-19%20at%2021.15.45.png?raw=true)
+!["Login page"](https://github.com/cheungjoshua/tinyapp/blob/main/docs/Screen%20Shot%202022-05-19%20at%2021.16.21%201.png?raw=true)
 
 ## Dependencies
 
