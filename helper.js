@@ -1,3 +1,8 @@
+/***
+ * Used it to check item belong to user or not
+ * if belong, return userID
+ * else return false
+ */
 const matchCheck = function (usersDB, obj) {
   for (let user in usersDB) {
     for (let item in usersDB[user]) {
@@ -9,6 +14,7 @@ const matchCheck = function (usersDB, obj) {
   return false;
 };
 
+// Generate Random 6 chars long string
 const generateRandomString = function () {
   let result = "";
   const letter =
@@ -18,6 +24,11 @@ const generateRandomString = function () {
   }
   return result;
 };
+
+/***
+ * Find url from url DB belong to user,
+ * return object of url
+ */
 
 const urlsForUser = function (list, id) {
   let matchURLS = {};
