@@ -44,6 +44,7 @@ let users = {
     id: "XtSlkc",
     email: "bb@b.com",
     password: "$2a$10$3x3T7TJPI7zptJ.l./TgoOSvZTYWd/G/Ak6ahpKIf3ojVmjXhvMTa",
+    // password: 1111
   },
 };
 
@@ -155,8 +156,12 @@ app.get("/urls", (req, res) => {
 
 // Post - URLS
 app.post("/urls", (req, res) => {
-  //get userID, shortURL , longURL , timestamp
+  // Check user login or not
   const id = req.session.user_id;
+  if (typeof id === "undefined") {
+    return res.send("User Not login");
+  }
+  //get userID, shortURL , longURL , timestamp
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   const created = new Date().getTime();
@@ -229,6 +234,10 @@ app.post("/urls/:shortURL/update", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const id = req.session.user_id;
   const shortURL = req.params.shortURL;
+  // If shortURL not exist, send error
+  if (typeof urlDatabase[shortURL] === "undefined") {
+    return res.send("Error: URL not exist");
+  }
   // check short URL belong to user or not
   if (urlDatabase[shortURL]["userID"] === id) {
     const templateVars = {
